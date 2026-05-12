@@ -35,4 +35,4 @@ CREATE TABLE replies (
     INDEX idx_news_id (news_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 註: 本專案會將第一位註冊會員設定為管理員。
+-- 註: 本專案只有帳號為 member 的會員會被視為管理員。

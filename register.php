@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $avatar = '😃';
             }
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-            $isAdmin = userCount() === 0 ? 1 : 0;
+            $isAdmin = $username === 'member' ? 1 : 0;
 
             $stmt = $pdo->prepare('INSERT INTO users (username, password_hash, nickname, favorite_color, avatar, is_admin) VALUES (?, ?, ?, ?, ?, ?)');
             $stmt->execute([$username, $passwordHash, $nickname, $favorite_color, $avatar, $isAdmin]);

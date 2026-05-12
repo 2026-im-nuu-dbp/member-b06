@@ -194,7 +194,7 @@ try {
             <div>
                 <?php if ($user): ?>
                     <span>您好，<?= escape($user['nickname']) ?> <?= escape($user['avatar']) ?></span>
-                    <?php if (!empty($user['is_admin'])): ?>
+                    <?php if (isAdminUser($user)): ?>
                         <a href="admin.php">管理員介面</a>
                     <?php endif; ?>
                     <a href="logout.php">登出</a>

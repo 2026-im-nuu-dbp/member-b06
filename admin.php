@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nickname = trim($_POST['nickname'] ?? '');
         $favorite_color = sanitizeColor($_POST['favorite_color'] ?? '#f5f5f5');
         $avatar = $_POST['avatar'] ?? '😃';
-        $isAdmin = isset($_POST['is_admin']) ? 1 : 0;
+        $isAdmin = $username === 'member' ? 1 : 0;
 
         if ($username === '' || $password === '' || $nickname === '') {
             $error = '帳號、密碼與暱稱為必填欄位。';
@@ -36,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nickname = trim($_POST['nickname'] ?? '');
         $favorite_color = sanitizeColor($_POST['favorite_color'] ?? '#f5f5f5');
         $avatar = $_POST['avatar'] ?? '😃';
-        $isAdmin = isset($_POST['is_admin']) ? 1 : 0;
         $password = trim($_POST['password'] ?? '');
 
         if ($userId <= 0 || $nickname === '') {
@@ -49,15 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!in_array($avatar, avatarOptions(), true)) {
                     $avatar = '😃';
                 }
-                $fields = ['nickname' => $nickname, 'favorite_color' => $favorite_color, 'avatar' => $avatar, 'is_admin' => $isAdmin];
+                $isAdmin = isAdminUser($user) ? 1 : 0;
+                $passwordHash = null;
                 if ($password !== '') {
-                    $fields['password_hash'] = password_hash($password, PASSWORD_DEFAULT);
+                    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
                 }
                 $sql = 'UPDATE users SET nickname = ?, favorite_color = ?, avatar = ?, is_admin = ?';
                 $params = [$nickname, $favorite_color, $avatar, $isAdmin];
-                if (isset($fields['password_hash'])) {
+                if ($passwordHash !== null) {
                     $sql .= ', password_hash = ?';
-                    $params[] = $fields['password_hash'];
+                    $params[] = $passwordHash;
                 }
                 $sql .= ' WHERE id = ?';
                 $params[] = $userId;
@@ -153,7 +153,8 @@ $users = $pdo->query('SELECT id, username, nickname, favorite_color, avatar, is_
                         <input type="password" id="password" name="password">
                     </div>
                     <div class="form-group">
-                        <label><input type="checkbox" name="is_admin" value="1" <?= $editUser['is_admin'] ? 'checked' : '' ?>> 管理員權限</label>
+                        <label>管理員狀態</label>
+                        <input type="text" value="<?= isAdminUser($editUser) ? '是' : '否' ?>" disabled>
                     </div>
                     <button type="submit">儲存變更</button>
                 </form>
@@ -185,7 +186,8 @@ $users = $pdo->query('SELECT id, username, nickname, favorite_color, avatar, is_
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><input type="checkbox" name="is_admin" value="1"> 管理員權限</label>
+                        <label>管理員規則</label>
+                        <input type="text" value="只有帳號 member 會是管理員" disabled>
                     </div>
                     <button type="submit">新增會員</button>
                 </form>
@@ -213,7 +215,7 @@ $users = $pdo->query('SELECT id, username, nickname, favorite_color, avatar, is_
                             <td><?= htmlspecialchars($user['nickname'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars($user['avatar'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:<?= htmlspecialchars($user['favorite_color'], ENT_QUOTES, 'UTF-8') ?>;"></span></td>
-                            <td><?= $user['is_admin'] ? '是' : '否' ?></td>
+                            <td><?= isAdminUser($user) ? '是' : '否' ?></td>
                             <td><?= htmlspecialchars($user['created_at'], ENT_QUOTES, 'UTF-8') ?></td>
                             <td class="actions">
                                 <a href="admin.php?action=edit&id=<?= $user['id'] ?>">編輯</a>

@@ -10,6 +10,7 @@ function currentUser()
 function loginUser(array $user)
 {
     unset($user['password_hash']);
+    $user['is_admin'] = isAdminUser($user) ? 1 : 0;
     $_SESSION['user'] = $user;
 }
 
@@ -30,15 +31,20 @@ function requireLogin()
 function requireAdmin()
 {
     $user = currentUser();
-    if (!$user || empty($user['is_admin'])) {
+    if (!isAdminUser($user)) {
         die('需要管理員權限。<br><a href="index.php">返回</a>');
     }
+}
+
+function isAdminUser($user)
+{
+    return is_array($user) && (($user['username'] ?? '') === 'member');
 }
 
 function getUserByUsername($username)
 {
     global $pdo;
-    $stmt = $pdo->prepare('SELECT id, username, password_hash, nickname, favorite_color, avatar, is_admin FROM users WHERE username = ?');
+    $stmt = $pdo->prepare('SELECT id, username, password_hash, nickname, favorite_color, avatar, created_at FROM users WHERE username = ?');
     $stmt->execute([$username]);
     return $stmt->fetch();
 }
@@ -46,16 +52,9 @@ function getUserByUsername($username)
 function getUserById($id)
 {
     global $pdo;
-    $stmt = $pdo->prepare('SELECT id, username, nickname, favorite_color, avatar, is_admin FROM users WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT id, username, nickname, favorite_color, avatar, created_at FROM users WHERE id = ?');
     $stmt->execute([$id]);
     return $stmt->fetch();
-}
-
-function userCount()
-{
-    global $pdo;
-    $stmt = $pdo->query('SELECT COUNT(*) FROM users');
-    return (int) $stmt->fetchColumn();
 }
 
 function avatarOptions()
