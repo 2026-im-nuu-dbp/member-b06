@@ -2,18 +2,18 @@
 // Read and display discussion topics
 
 header('Content-Type: text/html; charset=utf-8');
-require 'db_config.php';
+require 'auth.php';
+$user = currentUser();
 
-// Fetch all news topics with reply count
 try {
-    $stmt = $pdo->query('
-        SELECT n.id, n.title, n.author, n.created_at,
-               COUNT(r.id) as reply_count
-        FROM news n
-        LEFT JOIN replies r ON n.id = r.news_id
-        GROUP BY n.id, n.title, n.author, n.created_at
-        ORDER BY n.created_at DESC
-    ');
+    $stmt = $pdo->query(
+        'SELECT n.id, n.title, n.created_at, u.nickname, u.avatar, u.favorite_color, COUNT(r.id) AS reply_count
+         FROM news n
+         LEFT JOIN replies r ON n.id = r.news_id
+         LEFT JOIN users u ON n.user_id = u.id
+         GROUP BY n.id, n.title, n.created_at, u.nickname, u.avatar, u.favorite_color
+         ORDER BY n.created_at DESC'
+    );
     $news = $stmt->fetchAll();
 } catch (PDOException $e) {
     $error = '讀取討論失敗: ' . $e->getMessage();
@@ -36,10 +36,25 @@ try {
             max-width: 900px;
             margin: 0 auto;
         }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .top-bar a {
+            color: #007bff;
+            text-decoration: none;
+            margin-left: 12px;
+        }
+        .top-bar a:hover {
+            text-decoration: underline;
+        }
         h1 {
             color: #333;
             border-bottom: 3px solid #007bff;
             padding-bottom: 10px;
+            margin: 0;
         }
         .form-box {
             background: #fff;
@@ -139,7 +154,21 @@ try {
 </head>
 <body>
     <div class="container">
-        <h1>📋 討論區</h1>
+        <div class="top-bar">
+            <h1>📋 討論區</h1>
+            <div>
+                <?php if ($user): ?>
+                    <span>歡迎，<?= escape($user['nickname']) ?> <?= escape($user['avatar']) ?></span>
+                    <?php if (!empty($user['is_admin'])): ?>
+                        <a href="admin.php">管理員介面</a>
+                    <?php endif; ?>
+                    <a href="logout.php">登出</a>
+                <?php else: ?>
+                    <a href="login.php">登入</a>
+                    <a href="register.php">註冊</a>
+                <?php endif; ?>
+            </div>
+        </div>
 
         <?php if (isset($error)): ?>
             <div class="error"><?= escape($error) ?></div>
@@ -147,24 +176,25 @@ try {
 
         <div class="form-box">
             <h2>發表新討論</h2>
-            <form action="post.php" method="post">
-                <div class="form-group">
-                    <label for="author">作者：</label>
-                    <input type="text" id="author" name="author" maxlength="100" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="title">標題：</label>
-                    <input type="text" id="title" name="title" maxlength="200" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="content">內容：</label>
-                    <textarea id="content" name="content" required></textarea>
-                </div>
-
-                <button type="submit">發表討論</button>
-            </form>
+            <?php if ($user): ?>
+                <form action="post.php" method="post">
+                    <div class="form-group">
+                        <label>作者</label>
+                        <input type="text" value="<?= escape($user['nickname']) ?> <?= escape($user['avatar']) ?>" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">標題：</label>
+                        <input type="text" id="title" name="title" maxlength="200" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="content">內容：</label>
+                        <textarea id="content" name="content" required></textarea>
+                    </div>
+                    <button type="submit">發表討論</button>
+                </form>
+            <?php else: ?>
+                <p>請先 <a href="login.php">登入</a> 或 <a href="register.php">註冊</a>，才能發表討論。</p>
+            <?php endif; ?>
         </div>
 
         <h2>討論列表</h2>
@@ -176,7 +206,12 @@ try {
         <?php else: ?>
             <div class="news-list">
                 <?php foreach ($news as $item): ?>
-                    <div class="news-item">
+                    <?php
+                        $authorName = $item['nickname'] ? $item['nickname'] : '已刪除會員';
+                        $authorAvatar = $item['avatar'] ? $item['avatar'] : '👤';
+                        $authorColor = $item['favorite_color'] ? $item['favorite_color'] : '#007bff';
+                    ?>
+                    <div class="news-item" style="border-left: 5px solid <?= escape($authorColor) ?>;">
                         <div class="news-title">
                             <a href="show_news.php?id=<?= $item['id'] ?>">
                                 <?= escape($item['title']) ?>
@@ -188,7 +223,7 @@ try {
                             <?php endif; ?>
                         </div>
                         <div class="news-meta">
-                            由 <strong><?= escape($item['author']) ?></strong> 發表於
+                            由 <strong><?= escape($authorName) ?> <?= escape($authorAvatar) ?></strong> 發表於
                             <?= escape($item['created_at']) ?>
                         </div>
                     </div>

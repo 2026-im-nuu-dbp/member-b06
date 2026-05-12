@@ -2,7 +2,7 @@
 // Database configuration
 
 $host = 'localhost';
-$db = 'test_db';
+$db = 'member';
 $user = 'root';
 $password = '';
 $charset = 'utf8mb4';
