@@ -40,19 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <title>註冊 - 討論區</title>
-    <style>
-        body { font-family: system-ui, -apple-system, Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 520px; margin: 0 auto; }
-        .card { background: #fff; padding: 24px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-        h1 { margin-top: 0; color: #333; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; font-weight: bold; color: #444; }
-        input[type="text"], input[type="password"], input[type="color"], select { width: 100%; padding: 10px; border: 1px solid #dcdcdc; border-radius: 6px; }
-        button { width: 100%; background: #007bff; color: #fff; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #0056b3; }
-        .error { color: #b71c1c; margin-bottom: 16px; }
-        .link { margin-top: 12px; display: block; color: #007bff; text-decoration: none; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">

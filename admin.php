@@ -92,26 +92,7 @@ $users = $pdo->query('SELECT id, username, nickname, favorite_color, avatar, is_
 <head>
     <meta charset="utf-8">
     <title>會員管理 - 討論區</title>
-    <style>
-        body { font-family: system-ui, -apple-system, Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 960px; margin: 0 auto; }
-        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-        .card { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 24px; }
-        h1, h2 { margin-top: 0; color: #333; }
-        .form-group { margin-bottom: 14px; }
-        label { display: block; margin-bottom: 6px; font-weight: bold; color: #444; }
-        input[type="text"], input[type="password"], input[type="color"], select { width: 100%; padding: 10px; border: 1px solid #dcdcdc; border-radius: 6px; }
-        button { background: #007bff; color: #fff; padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; border-bottom: 1px solid #eaeaea; text-align: left; }
-        th { background: #f5f5f5; }
-        .actions a { margin-right: 10px; color: #007bff; text-decoration: none; }
-        .actions a:hover { text-decoration: underline; }
-        .error { color: #b71c1c; margin-bottom: 12px; }
-        .success { color: #1b5e20; margin-bottom: 12px; }
-        .link { color: #007bff; text-decoration: none; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
