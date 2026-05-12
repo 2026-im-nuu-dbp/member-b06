@@ -1,3 +1,4 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/JkTWvd7s)
 # 作業 7 會員管理系統 集合群組討論應用
 
 ## 說明
@@ -13,3 +14,5 @@
 ## 注意事項
 1. 分組的每一位同學至少需要進行一次 commit push 
 2. demo 時每位同學須找一個部份來說明
+
+3. 本系統只有帳號為 member 的會員會被視為管理員，方便初始化管理介面與會員資料維護。
